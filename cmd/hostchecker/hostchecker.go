@@ -31,11 +31,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	var f *os.File
+	if f, err = os.Open(configName); err != nil {
+		log.WithError(err).Fatal("failed to open config file")
+	}
+
 	var cfg *config.Config
-	cfg, err = config.GetFromFile(configName)
-	if err != nil {
+	if cfg, err = config.Read(f); err != nil {
 		log.WithError(err).Fatal("failed to load configuration")
 	}
+
+	_ = f.Close()
 
 	if cfg.Debug {
 		log.SetLevel(log.DebugLevel)

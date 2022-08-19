@@ -4,7 +4,6 @@ metadata:
   name: hostchecker
 data:
   config.yaml: |
-    debug: true
     port: 8080
     targets:
       http:

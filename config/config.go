@@ -1,10 +1,9 @@
 package config
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v3"
+	"io"
 	"net/http"
-	"os"
 )
 
 type Config struct {
@@ -24,31 +23,31 @@ type HTTPTarget struct {
 	Codes  []int  `yaml:"codes"`
 }
 
-func GetFromFile(filename string) (*Config, error) {
-	content, err := os.ReadFile(filename)
-	if err != nil {
-		return nil, fmt.Errorf("config file read failed: %w", err)
+func (t *Config) UnmarshalYAML(node *yaml.Node) error {
+	type cfg2 Config
+	c := cfg2{
+		Port: defaultPort,
 	}
-	return Get(content)
+
+	if err := node.Decode(&c); err != nil {
+		return err
+	}
+	for index := range c.Targets.Http {
+		if c.Targets.Http[index].Method == "" {
+			c.Targets.Http[index].Method = http.MethodGet
+		}
+		if len(c.Targets.Http[index].Codes) == 0 {
+			c.Targets.Http[index].Codes = []int{http.StatusOK}
+		}
+	}
+	*t = Config(c)
+	return nil
 }
 
 const defaultPort = 8080
 
-func Get(content []byte) (*Config, error) {
-	cfg := &Config{
-		Port: defaultPort,
-	}
-	if err := yaml.Unmarshal(content, &cfg); err != nil {
-		return nil, err
-	}
-
-	for index := range cfg.Targets.Http {
-		if cfg.Targets.Http[index].Method == "" {
-			cfg.Targets.Http[index].Method = http.MethodGet
-		}
-		if len(cfg.Targets.Http[index].Codes) == 0 {
-			cfg.Targets.Http[index].Codes = []int{http.StatusOK}
-		}
-	}
-	return cfg, nil
+func Read(r io.Reader) (*Config, error) {
+	cfg := &Config{}
+	err := yaml.NewDecoder(r).Decode(cfg)
+	return cfg, err
 }

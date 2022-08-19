@@ -1,3 +1,9 @@
-port: 8080
+debug: true
+port: 9000
 targets:
-    http: []
+    http:
+        - name: example
+          url: https://example.com
+          method: GET
+          codes:
+            - 200

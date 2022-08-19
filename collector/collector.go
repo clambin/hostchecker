@@ -42,10 +42,11 @@ const MaxConcurrentChecks = 3
 func New(targets config.Targets) *Collector {
 	c := &Collector{MaxConcurrentChecks: MaxConcurrentChecks}
 
+	httpClient := http.DefaultClient
 	for _, target := range targets.Http {
 		c.Targets = append(c.Targets, &sitechecker.HTTPChecker{
 			Target:     target,
-			HTTPClient: http.DefaultClient,
+			HTTPClient: httpClient,
 		})
 	}
 	return c

@@ -1,6 +1,7 @@
 package config_test
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"github.com/stretchr/testify/assert"
@@ -21,20 +22,18 @@ func TestGet(t *testing.T) {
 		pass    bool
 	}{
 		{
-			content: ``,
-			pass:    true,
-		},
-		{
 			content: `debug: true
 port: 9000
-sites:
+targets:
+  http:
   - name: example
     url: https://example.com
 `,
 			pass: true,
 		},
 		{
-			content: `sites:
+			content: `targets:
+  http:
   - name: example
     url: https://example.com
     method: POST
@@ -43,6 +42,10 @@ sites:
 		},
 		{
 			content: `not a yaml file`,
+			pass:    false,
+		},
+		{
+			content: ``,
 			pass:    false,
 		},
 		/*
@@ -58,7 +61,7 @@ sites:
 	}
 
 	for index, tt := range testCases {
-		cfg, err := config.Get([]byte(tt.content))
+		cfg, err := config.Read(bytes.NewBufferString(tt.content))
 
 		if !tt.pass {
 			assert.Error(t, err, index)
@@ -81,6 +84,6 @@ sites:
 		golden, err = os.ReadFile(gp)
 		require.NoError(t, err, index)
 
-		assert.Equal(t, golden, output)
+		assert.Equal(t, string(golden), string(output), index)
 	}
 }

@@ -46,7 +46,7 @@ func (hc HTTPChecker) Check() (*Stats, error) {
 
 	_ = resp.Body.Close()
 
-	log.WithFields(log.Fields{"url": hc.Target.URL, "code": resp.StatusCode}).Debug("target reached")
+	log.WithFields(log.Fields{"url": hc.Target.URL, "code": resp.StatusCode}).Info("host checked")
 
 	if hc.isValidHTTPCode(resp.StatusCode) {
 		stats.Up = true
