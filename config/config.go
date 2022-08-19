@@ -50,6 +50,5 @@ func Get(content []byte) (*Config, error) {
 			cfg.Targets.Http[index].Codes = []int{http.StatusOK}
 		}
 	}
-
 	return cfg, nil
 }
