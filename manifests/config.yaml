@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hostchecker
+data:
+  config.yaml: |
+    debug: true
+    port: 8080
+    targets:
+      http:
+      - name: plex
+        url: https://plex.agrajag.duckdns.org
+        codes:
+          - 200
+          - 401
+      - name: sonarr
+        url: https://sonarr.agrajag.duckdns.org
+        codes:
+          - 200
+      - name: radarr
+        url: https://radarr.agrajag.duckdns.org
+        codes:
+          - 200
+      - name: grafana
+        url: https://grafana.agrajag.duckdns.org
+        codes:
+          - 200
