@@ -6,5 +6,4 @@ resources:
 - deployment.yaml
 images:
 - name: ghcr.io/clambin/hostchecker
-  newTag: latest
-  #newTag: $TAG
+  newTag: $TAG
