@@ -44,7 +44,7 @@ func main() {
 
 	_ = f.Close()
 
-	if cfg.Debug {
+	if debug || cfg.Debug {
 		log.SetLevel(log.DebugLevel)
 	}
 
