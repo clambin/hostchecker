@@ -51,7 +51,7 @@ func main() {
 	c := collector.New(cfg.Targets)
 	prometheus.MustRegister(c)
 
-	log.Info("starting metrics server")
+	log.WithField("version", version.BuildVersion).Info("starting metrics server")
 	s := server.New(cfg.Port)
 	if err = s.Run(); !errors.Is(err, http.ErrServerClosed) {
 		log.WithError(err).Fatal("failed to start metrics server")
