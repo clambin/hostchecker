@@ -9,18 +9,16 @@ data:
       http:
       - name: plex
         url: https://plex.agrajag.duckdns.org
-        codes:
-          - 200
-          - 401
+        codes: [200, 307, 401]
       - name: sonarr
         url: https://sonarr.agrajag.duckdns.org
-        codes:
-          - 200
+        codes: [200, 307]
       - name: radarr
         url: https://radarr.agrajag.duckdns.org
-        codes:
-          - 200
+        codes: [200, 307]
       - name: grafana
         url: https://grafana.agrajag.duckdns.org
-        codes:
-          - 200
+        codes: [200, 307]
+      - name: whoami
+        url: https://whoami.agrajag.duckdns.org
+        codes: [200, 307]
