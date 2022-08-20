@@ -8,6 +8,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"hostchecker/collector"
 	"hostchecker/config"
+	"hostchecker/version"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,7 +20,7 @@ func main() {
 		configName string
 	)
 	a := kingpin.New(filepath.Base(os.Args[0]), "hostchecker")
-	a.Version( /*version.BuildVersion*/ "0.0.1")
+	a.Version(version.BuildVersion)
 	a.HelpFlag.Short('h')
 	a.VersionFlag.Short('v')
 	a.Flag("debug", "Log debug messages").Short('d').BoolVar(&debug)

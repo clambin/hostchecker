@@ -23,31 +23,21 @@ type HTTPTarget struct {
 	Codes  []int  `yaml:"codes"`
 }
 
-func (t *Config) UnmarshalYAML(node *yaml.Node) error {
-	type cfg2 Config
-	c := cfg2{
-		Port: defaultPort,
-	}
-
-	if err := node.Decode(&c); err != nil {
-		return err
-	}
-	for index := range c.Targets.Http {
-		if c.Targets.Http[index].Method == "" {
-			c.Targets.Http[index].Method = http.MethodGet
-		}
-		if len(c.Targets.Http[index].Codes) == 0 {
-			c.Targets.Http[index].Codes = []int{http.StatusOK}
-		}
-	}
-	*t = Config(c)
-	return nil
-}
-
 const defaultPort = 8080
 
 func Read(r io.Reader) (*Config, error) {
-	cfg := &Config{}
-	err := yaml.NewDecoder(r).Decode(cfg)
-	return cfg, err
+	cfg := &Config{Port: defaultPort}
+	if err := yaml.NewDecoder(r).Decode(cfg); err != nil {
+		return nil, err
+	}
+
+	for index := range cfg.Targets.Http {
+		if cfg.Targets.Http[index].Method == "" {
+			cfg.Targets.Http[index].Method = http.MethodGet
+		}
+		if len(cfg.Targets.Http[index].Codes) == 0 {
+			cfg.Targets.Http[index].Codes = []int{http.StatusOK}
+		}
+	}
+	return cfg, nil
 }
