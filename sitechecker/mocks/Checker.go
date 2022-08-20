@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	sitechecker "hostchecker/sitechecker"
+	sitechecker "github.com/clambin/hostchecker/sitechecker"
 
 	mock "github.com/stretchr/testify/mock"
 )

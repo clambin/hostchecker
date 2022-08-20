@@ -2,10 +2,10 @@ package collector
 
 import (
 	"context"
+	"github.com/clambin/hostchecker/config"
+	"github.com/clambin/hostchecker/sitechecker"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sync/semaphore"
-	"hostchecker/config"
-	"hostchecker/sitechecker"
 	"net/http"
 )
 

@@ -1,4 +1,4 @@
-module hostchecker
+module github.com/clambin/hostchecker
 
 go 1.19
 

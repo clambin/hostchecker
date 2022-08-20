@@ -2,8 +2,8 @@ package sitechecker
 
 import (
 	"context"
+	"github.com/clambin/hostchecker/config"
 	log "github.com/sirupsen/logrus"
-	"hostchecker/config"
 	"net/http"
 	"time"
 )

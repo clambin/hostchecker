@@ -1,10 +1,10 @@
 package sitechecker_test
 
 import (
+	"github.com/clambin/hostchecker/config"
+	"github.com/clambin/hostchecker/sitechecker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"hostchecker/config"
-	"hostchecker/sitechecker"
 	"net/http"
 	"net/http/httptest"
 	"testing"

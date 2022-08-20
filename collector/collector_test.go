@@ -3,13 +3,13 @@ package collector_test
 import (
 	"bytes"
 	"fmt"
+	"github.com/clambin/hostchecker/collector"
+	"github.com/clambin/hostchecker/config"
+	"github.com/clambin/hostchecker/sitechecker"
+	"github.com/clambin/hostchecker/sitechecker/mocks"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"hostchecker/collector"
-	"hostchecker/config"
-	"hostchecker/sitechecker"
-	"hostchecker/sitechecker/mocks"
 	"testing"
 	"time"
 )
