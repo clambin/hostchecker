@@ -23,7 +23,6 @@ spec:
       - name: hostchecker
         image: ghcr.io/clambin/hostchecker
         args:
-          - '--debug'
           - '--config=/etc/hostchecker/config.yaml'
         imagePullPolicy: Always
         ports:
