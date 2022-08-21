@@ -52,7 +52,14 @@ func main() {
 	prometheus.MustRegister(c)
 
 	log.WithField("version", version.BuildVersion).Info("starting metrics server")
-	s := server.New(cfg.Port)
+	s := server.NewWithHandlers(cfg.Port, []server.Handler{
+		{
+			Path: "/",
+			Handler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.WriteHeader(http.StatusOK)
+			}),
+		},
+	})
 	if err = s.Run(); !errors.Is(err, http.ErrServerClosed) {
 		log.WithError(err).Fatal("failed to start metrics server")
 	}
