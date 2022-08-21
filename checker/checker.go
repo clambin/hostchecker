@@ -1,4 +1,4 @@
-package sitechecker
+package checker
 
 import (
 	"context"
@@ -8,11 +8,28 @@ import (
 	"time"
 )
 
+// A Checker determines the state of a target host
+//
 //go:generate mockery --name Checker
 type Checker interface {
 	Check() (*Stats, error)
 }
 
+// Stats contains all metrics determines while checking a target host
+type Stats struct {
+	// Target host that was checked
+	Target config.HTTPTarget
+	// Up is true if the host was reachable
+	Up bool
+	// Latency is the time to receive a response from the target host
+	Latency time.Duration
+	// IsTLS is true if the host was contacted over HTTPS
+	IsTLS bool
+	// CertificateAge is the duration until the HTTP server certificate expires
+	CertificateAge time.Duration
+}
+
+// An HTTPChecker determines the state of a target HTTP(s) host
 type HTTPChecker struct {
 	Target     config.HTTPTarget
 	HTTPClient *http.Client
@@ -20,14 +37,7 @@ type HTTPChecker struct {
 
 var _ Checker = &HTTPChecker{}
 
-type Stats struct {
-	Target         config.HTTPTarget
-	Up             bool
-	Latency        time.Duration
-	IsTLS          bool
-	CertificateAge time.Duration
-}
-
+// Check determines the state of an HTTP(s) target
 func (hc HTTPChecker) Check() (*Stats, error) {
 	stats := &Stats{Target: hc.Target}
 
@@ -48,8 +58,7 @@ func (hc HTTPChecker) Check() (*Stats, error) {
 
 	log.WithFields(log.Fields{"url": hc.Target.URL, "code": resp.StatusCode}).Info("host checked")
 
-	if hc.isValidHTTPCode(resp.StatusCode) {
-		stats.Up = true
+	if stats.Up = hc.Target.Codes.IsValidCode(resp.StatusCode); stats.Up {
 		stats.Latency = time.Since(start)
 	} else {
 		log.Warningf("target responded with unexpected HTTP code: %d", resp.StatusCode)
@@ -61,13 +70,4 @@ func (hc HTTPChecker) Check() (*Stats, error) {
 	}
 
 	return stats, nil
-}
-
-func (hc HTTPChecker) isValidHTTPCode(code int) bool {
-	for _, validCode := range hc.Target.Codes {
-		if code == validCode {
-			return true
-		}
-	}
-	return false
 }

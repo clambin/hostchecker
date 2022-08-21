@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -86,4 +87,12 @@ targets:
 
 		assert.Equal(t, string(golden), string(output), index)
 	}
+}
+
+func TestValidCodes(t *testing.T) {
+	vc := config.ValidHTTPStatusCodes{http.StatusOK, http.StatusTemporaryRedirect}
+
+	assert.True(t, vc.IsValidCode(http.StatusOK))
+	assert.True(t, vc.IsValidCode(http.StatusTemporaryRedirect))
+	assert.False(t, vc.IsValidCode(http.StatusNotFound))
 }

@@ -3,8 +3,7 @@
 package mocks
 
 import (
-	sitechecker "github.com/clambin/hostchecker/sitechecker"
-
+	checker "github.com/clambin/hostchecker/checker"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -14,15 +13,15 @@ type Checker struct {
 }
 
 // Check provides a mock function with given fields:
-func (_m *Checker) Check() (*sitechecker.Stats, error) {
+func (_m *Checker) Check() (*checker.Stats, error) {
 	ret := _m.Called()
 
-	var r0 *sitechecker.Stats
-	if rf, ok := ret.Get(0).(func() *sitechecker.Stats); ok {
+	var r0 *checker.Stats
+	if rf, ok := ret.Get(0).(func() *checker.Stats); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*sitechecker.Stats)
+			r0 = ret.Get(0).(*checker.Stats)
 		}
 	}
 

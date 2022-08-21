@@ -1,8 +1,8 @@
-package sitechecker_test
+package checker_test
 
 import (
+	"github.com/clambin/hostchecker/checker"
 	"github.com/clambin/hostchecker/config"
-	"github.com/clambin/hostchecker/sitechecker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -15,7 +15,7 @@ func TestSiteChecker_Check_HTTP(t *testing.T) {
 		_, _ = w.Write([]byte("Hello world"))
 	}))
 
-	checker := sitechecker.HTTPChecker{
+	chk := checker.HTTPChecker{
 		Target: config.HTTPTarget{
 			Name:  "test",
 			URL:   testServer.URL,
@@ -24,13 +24,13 @@ func TestSiteChecker_Check_HTTP(t *testing.T) {
 		HTTPClient: http.DefaultClient,
 	}
 
-	stats, err := checker.Check()
+	stats, err := chk.Check()
 	require.NoError(t, err)
 	assert.True(t, stats.Up)
 	assert.NotZero(t, stats.Latency)
 
 	testServer.Close()
-	stats, err = checker.Check()
+	stats, err = chk.Check()
 	require.NoError(t, err)
 	assert.False(t, stats.Up)
 }
@@ -40,7 +40,7 @@ func TestSiteChecker_Check_BadStatusCode(t *testing.T) {
 		_, _ = w.Write([]byte("Hello world"))
 	}))
 
-	checker := sitechecker.HTTPChecker{
+	chk := checker.HTTPChecker{
 		Target: config.HTTPTarget{
 			Name:  "test",
 			URL:   testServer.URL,
@@ -49,7 +49,7 @@ func TestSiteChecker_Check_BadStatusCode(t *testing.T) {
 		HTTPClient: http.DefaultClient,
 	}
 
-	stats, err := checker.Check()
+	stats, err := chk.Check()
 	require.NoError(t, err)
 	assert.False(t, stats.Up)
 }
@@ -59,7 +59,7 @@ func TestSiteChecker_Check_HTTPS(t *testing.T) {
 		_, _ = w.Write([]byte("Hello world"))
 	}))
 
-	checker := sitechecker.HTTPChecker{
+	chk := checker.HTTPChecker{
 		Target: config.HTTPTarget{
 			Name:  "test",
 			URL:   testServer.URL,
@@ -68,7 +68,7 @@ func TestSiteChecker_Check_HTTPS(t *testing.T) {
 		HTTPClient: testServer.Client(),
 	}
 
-	stats, err := checker.Check()
+	stats, err := chk.Check()
 	require.NoError(t, err)
 	assert.True(t, stats.Up)
 	assert.NotZero(t, stats.Latency)
@@ -76,7 +76,7 @@ func TestSiteChecker_Check_HTTPS(t *testing.T) {
 	assert.NotZero(t, stats.CertificateAge)
 
 	testServer.Close()
-	stats, err = checker.Check()
+	stats, err = chk.Check()
 	require.NoError(t, err)
 	assert.False(t, stats.Up)
 
