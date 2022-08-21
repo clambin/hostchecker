@@ -74,13 +74,7 @@ func (c Collector) Collect(ch chan<- prometheus.Metric) {
 		_ = maxJobs.Acquire(ctx, 1)
 
 		go func(site checker.Checker) {
-			if stats, err := site.Check(); err == nil {
-				c.collectSiteStats(ch, stats.Target, stats)
-			} else {
-				ch <- prometheus.NewInvalidMetric(prometheus.NewDesc("hostchecker_error",
-					"Error reaching site "+stats.Target.URL, nil, nil),
-					err)
-			}
+			c.collectTarget(ch, site)
 			maxJobs.Release(1)
 		}(site)
 	}
@@ -88,16 +82,26 @@ func (c Collector) Collect(ch chan<- prometheus.Metric) {
 	_ = maxJobs.Acquire(ctx, c.MaxConcurrentChecks)
 }
 
-func (c Collector) collectSiteStats(ch chan<- prometheus.Metric, site config.HTTPTarget, stats *checker.Stats) {
-	if !stats.Up {
-		ch <- prometheus.MustNewConstMetric(metricUp, prometheus.GaugeValue, 0, site.URL, site.Name)
+func (c Collector) collectTarget(ch chan<- prometheus.Metric, target checker.Checker) {
+	stats, err := target.Check()
+
+	if err != nil {
+		ch <- prometheus.NewInvalidMetric(prometheus.NewDesc("hostchecker_error",
+			"Error reaching site "+stats.Target.URL, nil, nil),
+			err)
 		return
 	}
 
-	ch <- prometheus.MustNewConstMetric(metricUp, prometheus.GaugeValue, 1.0, site.URL, site.Name)
-	ch <- prometheus.MustNewConstMetric(metricLatency, prometheus.GaugeValue, stats.Latency.Seconds(), site.URL, site.Name)
+	if !stats.Up {
+		ch <- prometheus.MustNewConstMetric(metricUp, prometheus.GaugeValue, 0, stats.Target.URL, stats.Target.Name)
+		return
+	}
+
+	ch <- prometheus.MustNewConstMetric(metricUp, prometheus.GaugeValue, 1.0, stats.Target.URL, stats.Target.Name)
+	ch <- prometheus.MustNewConstMetric(metricLatency, prometheus.GaugeValue, stats.Latency.Seconds(), stats.Target.URL, stats.Target.Name)
+
 	if stats.IsTLS {
-		ch <- prometheus.MustNewConstMetric(metricCertAge, prometheus.GaugeValue, stats.CertificateAge.Hours()/24, site.URL, site.Name)
+		ch <- prometheus.MustNewConstMetric(metricCertAge, prometheus.GaugeValue, stats.CertificateAge.Hours()/24, stats.Target.URL, stats.Target.Name)
 
 	}
 }

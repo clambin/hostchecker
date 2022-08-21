@@ -75,3 +75,32 @@ func TestCollector_Collect_Failure(t *testing.T) {
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), `Desc{fqName: "hostchecker_error", help: "Error reaching site http://localhost", constLabels: {}, variableLabels: []}`)
 }
+
+type fakeChecker struct{}
+
+func (f fakeChecker) Check() (*checker.Stats, error) {
+	return &checker.Stats{
+		Target: config.HTTPTarget{
+			Name: "test",
+			URL:  "https://localhost:8080",
+		},
+		Up:      true,
+		Latency: 100 * time.Millisecond,
+	}, nil
+}
+
+func BenchmarkCollector_Collect(b *testing.B) {
+	c := collector.New(config.Targets{HTTP: []config.HTTPTarget{
+		{Name: "tls", URL: "https://localhost"},
+	}})
+	require.Len(b, c.Targets, 1)
+	c.Targets[0] = &fakeChecker{}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		count := testutil.CollectAndCount(c)
+		if count != 2 {
+			b.Fatalf("got %d metrics", count)
+		}
+	}
+}
