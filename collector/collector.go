@@ -47,7 +47,11 @@ const MaxConcurrentChecks = 3
 func New(targets config.Targets) *Collector {
 	c := &Collector{MaxConcurrentChecks: MaxConcurrentChecks}
 
-	httpClient := http.DefaultClient
+	httpClient := &http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
 	for _, target := range targets.HTTP {
 		c.Targets = append(c.Targets, &checker.HTTPChecker{
 			Target:     target,
