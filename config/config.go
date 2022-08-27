@@ -31,6 +31,19 @@ type HTTPTarget struct {
 	Codes ValidHTTPStatusCodes `yaml:"codes"`
 }
 
+func (t *HTTPTarget) UnmarshalYAML(value *yaml.Node) error {
+	type t2 HTTPTarget
+	o := t2{
+		Method: http.MethodGet,
+		Codes:  ValidHTTPStatusCodes{http.StatusOK},
+	}
+	if err := value.Decode(&o); err != nil {
+		return err
+	}
+	*t = HTTPTarget(o)
+	return nil
+}
+
 // ValidHTTPStatusCodes is the list of expected HTTP status codes
 type ValidHTTPStatusCodes []int
 
@@ -53,13 +66,5 @@ func Read(r io.Reader) (*Config, error) {
 		return nil, err
 	}
 
-	for index := range cfg.Targets.HTTP {
-		if cfg.Targets.HTTP[index].Method == "" {
-			cfg.Targets.HTTP[index].Method = http.MethodGet
-		}
-		if len(cfg.Targets.HTTP[index].Codes) == 0 {
-			cfg.Targets.HTTP[index].Codes = ValidHTTPStatusCodes{http.StatusOK}
-		}
-	}
 	return cfg, nil
 }

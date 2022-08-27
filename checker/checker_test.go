@@ -79,5 +79,17 @@ func TestSiteChecker_Check_HTTPS(t *testing.T) {
 	stats, err = chk.Check()
 	require.NoError(t, err)
 	assert.False(t, stats.Up)
+}
 
+func TestHTTPChecker_Check_BadConfig(t *testing.T) {
+	chk := checker.HTTPChecker{
+		Target: config.HTTPTarget{
+			Name:   "test",
+			Method: "???",
+			Codes:  []int{http.StatusOK},
+		},
+		HTTPClient: http.DefaultClient,
+	}
+	_, err := chk.Check()
+	assert.Error(t, err)
 }

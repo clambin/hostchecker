@@ -1,7 +1,6 @@
 package checker
 
 import (
-	"context"
 	"github.com/clambin/hostchecker/config"
 	log "github.com/sirupsen/logrus"
 	"net/http"
@@ -42,7 +41,7 @@ func (hc HTTPChecker) Check() (*Stats, error) {
 	stats := &Stats{Target: hc.Target}
 
 	log.WithField("url", hc.Target.URL).Debug("checking site")
-	req, err := http.NewRequestWithContext(context.Background(), hc.Target.Method, hc.Target.URL, nil)
+	req, err := http.NewRequest(hc.Target.Method, hc.Target.URL, nil)
 	if err != nil {
 		return stats, err
 	}
