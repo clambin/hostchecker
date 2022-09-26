@@ -7,6 +7,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/sync/semaphore"
 	"net/http"
+	"time"
 )
 
 // Collector checks the status of a list of Targets and exposes the results as Prometheus scrape metrics
@@ -51,6 +52,7 @@ func New(targets config.Targets) *Collector {
 		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
+		Timeout: 15 * time.Second,
 	}
 	for _, target := range targets.HTTP {
 		c.Targets = append(c.Targets, &checker.HTTPChecker{
